@@ -1,0 +1,4 @@
+storage\FileLinkRepositoryTest.class
+util\ConfigTest.class
+util\UrlValidatorTest.class
+service\ShortenerServiceTest.class

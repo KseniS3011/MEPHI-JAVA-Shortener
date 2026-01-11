@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ru"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CleanupService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">shortlink-service</a> &gt; <a href="index.source.html" class="el_package">service</a> &gt; <span class="el_source">CleanupService.java</span></div><h1>CleanupService.java</h1><pre class="source lang-java linenums">package service;
+
+import model.Link;
+import storage.LinkRepository;
+import util.Config;
+
+import java.time.Instant;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+public class CleanupService {
+    private final LinkRepository repo;
+    private final Config config;
+    private ScheduledExecutorService scheduler;
+
+<span class="nc" id="L17">    public CleanupService(LinkRepository repo, Config config) {</span>
+<span class="nc" id="L18">        this.repo = repo;</span>
+<span class="nc" id="L19">        this.config = config;</span>
+<span class="nc" id="L20">    }</span>
+
+    public void start() {
+<span class="nc" id="L23">        scheduler = Executors.newSingleThreadScheduledExecutor();</span>
+<span class="nc" id="L24">        long periodSec = Math.max(1, config.cleanupInterval().toSeconds());</span>
+<span class="nc" id="L25">        scheduler.scheduleAtFixedRate(this::cleanupExpired, periodSec, periodSec, TimeUnit.SECONDS);</span>
+<span class="nc" id="L26">    }</span>
+
+    public void stop() {
+<span class="nc bnc" id="L29" title="All 2 branches missed.">        if (scheduler != null) scheduler.shutdownNow();</span>
+<span class="nc" id="L30">    }</span>
+
+    private void cleanupExpired() {
+<span class="nc" id="L33">        Instant now = Instant.now();</span>
+<span class="nc bnc" id="L34" title="All 2 branches missed.">        for (Link l : repo.findAll()) {</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">            if (now.isAfter(l.expiresAt())) {</span>
+<span class="nc" id="L36">                repo.deleteByCode(l.code());</span>
+<span class="nc" id="L37">                System.out.println(&quot;Уведомление: срок действия ссылки (&quot; + l.code() + &quot;) истёк, ссылка удалена.&quot;);</span>
+            }
+<span class="nc" id="L39">        }</span>
+<span class="nc" id="L40">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
