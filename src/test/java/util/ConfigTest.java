@@ -1,23 +1,23 @@
 package util;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class ConfigTest {
 
-    @TempDir
-    Path tempDir;
+  @TempDir Path tempDir;
 
-    @Test
-    void loadsProperties() throws Exception {
-        Path cfg = tempDir.resolve("app.properties");
+  @Test
+  void loadsProperties() throws Exception {
+    Path cfg = tempDir.resolve("app.properties");
 
-        Files.writeString(cfg, """
+    Files.writeString(
+        cfg,
+        """
                 ttlSeconds=120
                 defaultMaxClicks=3
                 baseUrl=http://localhost/
@@ -26,13 +26,13 @@ public class ConfigTest {
                 cleanupIntervalSeconds=7
                 """);
 
-        Config c = Config.load(cfg);
+    Config c = Config.load(cfg);
 
-        assertEquals(120, c.ttl().toSeconds());
-        assertEquals(3, c.defaultMaxClicks());
-        assertEquals("http://localhost/", c.baseUrl());
-        assertEquals("data/links.json", c.storageFile());
-        assertEquals("data/user.uuid", c.userUuidFile());
-        assertEquals(7, c.cleanupInterval().toSeconds());
-    }
+    assertEquals(120, c.ttl().toSeconds());
+    assertEquals(3, c.defaultMaxClicks());
+    assertEquals("http://localhost/", c.baseUrl());
+    assertEquals("data/links.json", c.storageFile());
+    assertEquals("data/user.uuid", c.userUuidFile());
+    assertEquals(7, c.cleanupInterval().toSeconds());
+  }
 }
